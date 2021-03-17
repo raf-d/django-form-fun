@@ -32,6 +32,50 @@ $(function() {
         });
     };
 
+    // function delete_post() {
+    //     console.log('trying to delete post')
+    //     let added_posts = document.querySelector('#talk')
+    //     console.log('Lista postów')
+    //     console.log(added_posts)
+    //     const toDelete = added_posts.children[3]
+    //     added_posts.removeChild(toDelete)
+    //     console.log('Lista postów po usunięciu [3]')
+    //     console.log(added_posts)
+    // }
+
+    // Delete post on click
+    $('#talk').on('click', 'a[id^=delete-post-]', function (){
+        var post_primary_key = $(this).attr('id').split('-')[2];
+        console.log(post_primary_key) // sanity check
+        delete_post(post_primary_key)
+    })
+
+
+
+    function delete_post(post_primary_key){
+        if (confirm('are you sure you want to remove this post?')==true){
+            $.ajax({
+                url: 'delete_post/',  // the endpoint
+                type: 'DELETE',  // http method
+                data: {postpk: post_primary_key},  // data sent with the delete request
+                success: function (json){
+                    // hide the post
+                    $('#post-'+post_primary_key).hide();  // hide the post on success
+                    console.log('post deletion successful');
+                },
+
+                error: function (xhr, errmsg, err){
+                    // show an error
+                    $('#results').html("<div class='alert-box alert radius' data-alert>"+
+                        "Oops! We have encountered an error. <a href='#' class='close'>&times;</a></div>"); // add error to the dom
+                    console.log(xhr.status + ': ' + xhr.responseText);  // provide a bit more info about the error to the console
+                }
+            });
+        } else {
+            return false;
+        }
+    };
+
 
     // This function gets cookie with a given name
     function getCookie(name) {

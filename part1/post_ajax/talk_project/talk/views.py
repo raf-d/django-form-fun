@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse, QueryDict
 from talk.models import Post
 from talk.forms import PostForm
 
@@ -49,4 +49,23 @@ def create_post(request):
         return HttpResponse(
             json.dumps({"nothing to see": "this isn't happening"}),
             content_type="application/json"
+        )
+
+
+def delete_post(request):
+    if request.method == 'DELETE':
+
+        post = Post.objects.get(
+            pk=int(QueryDict(request.body).get('postpk'))
+        )
+        post.delete()
+
+        response_data = {}
+        response_data['msg'] = 'Post was deleted'
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponse(
+            json.dumps({'nothing to see': 'this isnt happening'}),
+            content_type='application/json'
         )
